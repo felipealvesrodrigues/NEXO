@@ -17,17 +17,33 @@ interface CardProps {
   onDelete: (id: number) => void
 }
 
-function Card({ title }: CardProps) {
+function Card({ title, id, status, onMove, onDelete }: CardProps) {
   return (
-    <div style={{border: '1px solid #475569', padding: '10px 8px 8px 8px', marginBottom: '10px', borderRadius: '5px'}}>
-      <p style={{margin: '0'}}>
+    <div style={{border: '1px solid #475569', padding: '8px', marginBottom: '10px', borderRadius: '5px'}}>
+      <p style={{margin: '0', marginTop: '6px', color: '#f8fafc'}}>
         {title}
       </p>
 
-      <div style={{display: 'flex', gap: '8px', marginTop: '8px' }}>
+      <div style={{display: 'flex', gap: '8px', marginTop: '9px' }}>
+      {status === 'to_do' && (
+        <button onClick={() => onMove(id, 'in_progress')}
+        style={{ cursor: 'pointer', padding: '4px 8px'}}>
+          Avançar
+        </button>
+      )}
 
+      {status === 'in_progress' && (
+        <button onClick={() => onMove(id, 'to_do')}
+        style={{ cursor: 'pointer', padding: '4px 8px'}}>
+          Voltar
+        </button>
+      )}
+
+      <button onClick={() => onDelete(id)} 
+      style={{ cursor: 'pointer', padding: '4px 8px', backgroundColor: '#ef4444',color: '#fff' , border: 'none', borderRadius: '4px'}}>
+        Excluir
+      </button>
       </div>
-
     </div>
   )
 }
@@ -106,7 +122,7 @@ export default function App() {
           {tasks 
           .filter((task) => task.status === 'to_do')
           .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} />
+            <Card key={task.id} title={task.title} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} />
           ))}
         </Column> 
         
@@ -114,7 +130,7 @@ export default function App() {
         {tasks
           .filter((task) => task.status === 'in_progress')
           .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} />
+            <Card key={task.id} title={task.title} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask}/>
           ))}
         </Column>
       </div>
