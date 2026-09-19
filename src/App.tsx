@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 
+export interface task {
+  id: number;
+  title: string;
+  description?: string;
+  status: string;
+}
 
 function Header() {
   return (
@@ -12,17 +18,24 @@ function Header() {
 interface CardProps {
   id: number
   title: string
+  description?: string
   status: string
   onMove: (id: number, newStatus: string) => void;
   onDelete: (id: number) => void
 }
 
-function Card({ title, id, status, onMove, onDelete }: CardProps) {
+function Card({ title, description, id, status, onMove, onDelete }: CardProps) {
   return (
     <div style={{border: '1px solid #475569', padding: '8px', marginBottom: '10px', borderRadius: '5px'}}>
       <p style={{margin: '0', marginTop: '6px', color: '#f8fafc'}}>
         {title}
       </p>
+
+      {description && (
+        <p style={{margin: '4px 0', fontSize: '0.9rem', color: '#94a3b8'}}>
+          {description}
+        </p>
+      )}
 
       <div style={{display: 'flex', gap: '8px', marginTop: '9px' }}>
       {status === 'to_do' && (
@@ -30,7 +43,7 @@ function Card({ title, id, status, onMove, onDelete }: CardProps) {
         style={{ cursor: 'pointer', padding: '4px 8px'}}>
           Avançar
         </button>
-      )}
+      )} 
 
       {status === 'in_progress' && (
         <button onClick={() => onMove(id, 'to_do')}
@@ -68,11 +81,12 @@ function Column({title, children}: ColumnProps ) {
 
 export default function App() {
   const [tasks, setTasks] = useState([ 
-    {id: 1, title: 'Aprender props e Children', status: 'to_do'},
-    {id: 2, title: 'Entender o useState', status: 'to_do'},
-    {id: 3, title: 'Montar a extrutura do NEXO', status: 'in_progress'},
+    {id: 1, title: 'Aprender props e Children', description: '', status: 'to_do'},
+    {id: 2, title: 'Entender o useState', description: '', status: 'to_do'},
+    {id: 3, title: 'Montar a extrutura do NEXO', description: '', status: 'in_progress'},
   ])
   const [newTaskTitle, setNewTaskTitle] = useState(''); /* Esse setNewTask vai pegar o que ta escrito lá no form. O setNewTask tbm está diretamente ligado ao campo de escrever o texto*/
+  const [newTaskDescription, setNewTaskDescription] = useState('')
   const handleAddTask = (e: React.FormEvent) => { /* handleAddTask, o parâmetro "e" e o setNewTaskTitle estão conctados. O setNewTaskTitle salva na memória do react o que o "e" capturou da digitação (por meio do e.target.value) e quando Enter ou o botão de enviar é apertado, o handle pega o que tá salvo SetNew e cria uma nova task com ele. */
     e.preventDefault(); /* Previne que a página recarregue ao enviar o formulário */
 
@@ -81,11 +95,13 @@ export default function App() {
     const newTask = {
       id: Date.now(), /* Gera um id baseado no tinmestamp atual */
       title: newTaskTitle,
+      description: newTaskDescription,
       status: 'to_do' /* Vai fazer com que toda nova task entre na aba de "A fazer" */
     };
 
     setTasks([...tasks, newTask]); /* Adiciona ua nova task mantendo as antigas */
     setNewTaskTitle('')/* Limpa o campo de texto depois de enviar */
+    setNewTaskDescription('');
   }
 
   const handleMoveTask = (id: number, newStatus: string) => {
@@ -112,6 +128,13 @@ export default function App() {
           style={{padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '300px'}}
           />
 
+          <textarea 
+          placeholder="Descrição da tarefa (opcional)"
+          value={newTaskDescription}
+          onChange={(e) => setNewTaskDescription(e.target.value)}
+          style={{padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '300px', resize: 'vertical'}}
+          />
+
           <button type="submit" style={{padding: ' 8px 18px', cursor: 'pointer'}}>
             Adicionar
           </button>
@@ -122,7 +145,7 @@ export default function App() {
           {tasks 
           .filter((task) => task.status === 'to_do')
           .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} />
+            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} />
           ))}
         </Column> 
         
@@ -130,7 +153,7 @@ export default function App() {
         {tasks
           .filter((task) => task.status === 'in_progress')
           .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask}/>
+            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask}/>
           ))}
         </Column>
       </div>
