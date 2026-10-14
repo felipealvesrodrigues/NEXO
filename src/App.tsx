@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export interface task {
+export interface task { /*  */
   id: number;
   title: string;
   description?: string;
@@ -21,10 +21,11 @@ interface CardProps {
   description?: string
   status: string
   onMove: (id: number, newStatus: string) => void;
-  onDelete: (id: number) => void
+  onDelete: (id: number) => void;
+  onEdit: (id: number, editTitle: string, editDescription?: string) => void 
 }
 
-function Card({ title, description, id, status, onMove, onDelete }: CardProps) {
+function Card({ title, description, id, status, onMove, onDelete, onEdit }: CardProps) {
   return (
     <div style={{border: '1px solid #475569', padding: '8px', marginBottom: '10px', borderRadius: '5px'}}>
       <p style={{margin: '0', marginTop: '6px', color: '#f8fafc'}}>
@@ -56,6 +57,8 @@ function Card({ title, description, id, status, onMove, onDelete }: CardProps) {
       style={{ cursor: 'pointer', padding: '4px 8px', backgroundColor: '#ef4444',color: '#fff' , border: 'none', borderRadius: '4px'}}>
         Excluir
       </button>
+
+      
       </div>
     </div>
   )
@@ -80,7 +83,7 @@ function Column({title, children}: ColumnProps ) {
 }
 
 export default function App() {
-  const [tasks, setTasks] = useState([ 
+  const [tasks, setTasks] = useState([ /* settask é o que muda as tasks em si, e as task são as tasks né mano */
     {id: 1, title: 'Aprender props e Children', description: '', status: 'to_do'},
     {id: 2, title: 'Entender o useState', description: '', status: 'to_do'},
     {id: 3, title: 'Montar a extrutura do NEXO', description: '', status: 'in_progress'},
@@ -114,6 +117,16 @@ export default function App() {
 
   const handleDeleteTask = (id: number) => {
     setTasks(tasks.filter((task) => task.id !== id))
+  }
+
+  const handleEditTask = (id: number, editTitle: string, editDescription: string) => {
+    setTasks(
+      tasks.map((task) => /* percorre as task */
+      task.id === id /* se o id for igual */
+      ? {...task, title: editTitle, description: editDescription } /* muda as info */
+      : task /* se não, so deixa as tasks do mesmo jeito */
+     )
+    )
   }
 
   return (
