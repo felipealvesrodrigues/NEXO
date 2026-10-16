@@ -26,6 +26,16 @@ interface CardProps {
 }
 
 function Card({ title, description, id, status, onMove, onDelete, onEdit }: CardProps) {
+  const[isEditing, setIsEditing] = useState(false)
+  const[editTitle, setEditTitle] = useState(title)
+  const[editDescription, setEditDescription] = useState(description || '')
+
+  const  handleSave = () => {
+    if (!editTitle.trim()) return; // Não permite salvar
+    onEdit(id, editTitle, editDescription); // chama a função do App
+    setIsEditing(false) //fecha o modo de edição  
+  }
+
   return (
     <div style={{border: '1px solid #475569', padding: '8px', marginBottom: '10px', borderRadius: '5px'}}>
       <p style={{margin: '0', marginTop: '6px', color: '#f8fafc'}}>
@@ -36,6 +46,28 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
         <p style={{margin: '4px 0', fontSize: '0.9rem', color: '#94a3b8'}}>
           {description}
         </p>
+      )}
+
+      {/* Se tiver no modo edição, isso aq vai mostrar os inputs para serem alterados */}
+      {isEditing ? (
+        <div style={{display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '8px'}}>
+          <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
+          style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc' }}
+          />
+          <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Descrição" 
+          style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical' }}
+          />
+          <button onClick={handleSave} style={{ cursor: 'pointer', padding: '4px' }}>
+            Salvar
+          </button>
+        </div>
+      ) : (
+        /* Se não tiver no moddo de edição, mostra o botão de editar */
+        <> 
+        <button onClick={() => setIsEditing(true)} style={{cursor: 'pointer', padding: '2px 6px', marginTop: '4px'}}>
+          Editar
+        </button>
+        </>
       )}
 
       <div style={{display: 'flex', gap: '8px', marginTop: '9px' }}>
@@ -83,7 +115,7 @@ function Column({title, children}: ColumnProps ) {
 }
 
 export default function App() {
-  const [tasks, setTasks] = useState([ /* settask é o que muda as tasks em si, e as task são as tasks né mano */
+  const [tasks, setTasks] = useState<task[]>([ /* settask é o que muda as tasks em si, e as task são as tasks né mano */
     {id: 1, title: 'Aprender props e Children', description: '', status: 'to_do'},
     {id: 2, title: 'Entender o useState', description: '', status: 'to_do'},
     {id: 3, title: 'Montar a extrutura do NEXO', description: '', status: 'in_progress'},
@@ -119,7 +151,7 @@ export default function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
-  const handleEditTask = (id: number, editTitle: string, editDescription: string) => {
+  const handleEditTask = (id: number, editTitle: string, editDescription?: string) => {
     setTasks(
       tasks.map((task) => /* percorre as task */
       task.id === id /* se o id for igual */
@@ -158,7 +190,7 @@ export default function App() {
           {tasks 
           .filter((task) => task.status === 'to_do')
           .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} />
+            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
           ))}
         </Column> 
         
@@ -166,7 +198,7 @@ export default function App() {
         {tasks
           .filter((task) => task.status === 'in_progress')
           .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask}/>
+            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
           ))}
         </Column>
       </div>
