@@ -26,7 +26,7 @@ interface CardProps {
 }
 
 function Card({ title, description, id, status, onMove, onDelete, onEdit }: CardProps) {
-  const[isEditing, setIsEditing] = useState(false)
+  const[isEditing, setIsEditing] = useState(false) /* O isEditing vai servir pra ativar o modo de edição, por padrão ele vem false. Lá em baixo tem a função que deixa ele true */
   const[editTitle, setEditTitle] = useState(title)
   const[editDescription, setEditDescription] = useState(description || '')
 
@@ -155,7 +155,7 @@ export default function App() {
     setTasks(
       tasks.map((task) => /* percorre as task */
       task.id === id /* se o id for igual */
-      ? {...task, title: editTitle, description: editDescription } /* muda as info */
+      ? {...task, title: editTitle, description: editDescription } /* muda as info titulo e descrição */
       : task /* se não, so deixa as tasks do mesmo jeito */
      )
     )
