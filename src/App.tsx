@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 
 export interface task { /*  */
   id: number;
@@ -22,17 +23,17 @@ interface CardProps {
   status: string
   onMove: (id: number, newStatus: string) => void;
   onDelete: (id: number) => void;
-  onEdit: (id: number, editTitle: string, editDescription?: string) => void 
+  onEdit: (id: number, editTitle: string, editDescription?: string) => void /* A ? é pra deixar opcional */
 }
 
 function Card({ title, description, id, status, onMove, onDelete, onEdit }: CardProps) {
   const[isEditing, setIsEditing] = useState(false) /* O isEditing vai servir pra ativar o modo de edição, por padrão ele vem false. Lá em baixo tem a função que deixa ele true */
-  const[editTitle, setEditTitle] = useState(title)
+  const[editTitle, setEditTitle] = useState(title) /* editTitle e o editDescription guardam o que o usuário está digitando */
   const[editDescription, setEditDescription] = useState(description || '')
 
-  const  handleSave = () => {
-    if (!editTitle.trim()) return; // Não permite salvar
-    onEdit(id, editTitle, editDescription); // chama a função do App
+  const  handleSave = () => { 
+    if (!editTitle.trim()) return; // Não permite salvar se o nome tiver vazio
+    onEdit(id, editTitle, editDescription); // chama a função do App passando o id, o novo titulo e a nova descrição
     setIsEditing(false) //fecha o modo de edição  
   }
 
@@ -63,7 +64,7 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
         </div>
       ) : (
         /* Se não tiver no moddo de edição, mostra o botão de editar */
-        <> 
+        <> {/* isso aq é pra substituir um div, permitindo retornar mais de um elemento pai de uma vez (tipo o button + a div) */}
         <button onClick={() => setIsEditing(true)} style={{cursor: 'pointer', padding: '2px 6px', marginTop: '4px'}}>
           Editar
         </button>
@@ -89,8 +90,6 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
       style={{ cursor: 'pointer', padding: '4px 8px', backgroundColor: '#ef4444',color: '#fff' , border: 'none', borderRadius: '4px'}}>
         Excluir
       </button>
-
-      
       </div>
     </div>
   )
@@ -115,11 +114,13 @@ function Column({title, children}: ColumnProps ) {
 }
 
 export default function App() {
-  const [tasks, setTasks] = useState<task[]>([ /* settask é o que muda as tasks em si, e as task são as tasks né mano */
-    {id: 1, title: 'Aprender props e Children', description: '', status: 'to_do'},
-    {id: 2, title: 'Entender o useState', description: '', status: 'to_do'},
-    {id: 3, title: 'Montar a extrutura do NEXO', description: '', status: 'in_progress'},
-  ])
+  const [tasks, setTasks] = useState<task[]>(() => {
+    const savedTasks = localStorage.getItem('nexo_tasks');
+    if (savedTasks) {
+      return JSON.parse(savedTasks); /* Converte o texto JSON de volta para array de objetos JS que o React consegue entender, porque o localStorage so consegue guardar textos simples. */
+    }
+    return []; /* Se não houver nada salvo, inicia com um array vazio */
+  })
   const [newTaskTitle, setNewTaskTitle] = useState(''); /* Esse setNewTask vai pegar o que ta escrito lá no form. O setNewTask tbm está diretamente ligado ao campo de escrever o texto*/
   const [newTaskDescription, setNewTaskDescription] = useState('')
   const handleAddTask = (e: React.FormEvent) => { /* handleAddTask, o parâmetro "e" e o setNewTaskTitle estão conctados. O setNewTaskTitle salva na memória do react o que o "e" capturou da digitação (por meio do e.target.value) e quando Enter ou o botão de enviar é apertado, o handle pega o que tá salvo SetNew e cria uma nova task com ele. */
