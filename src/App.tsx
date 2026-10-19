@@ -162,6 +162,10 @@ export default function App() {
     )
   }
 
+  useEffect(() => {
+    localStorage.setItem('nexo_tasks', JSON.stringify(tasks)) /* o stringfy faz o inverso do parse, ele transforma o array de volta em um texto para que ele seja salvo no localStorage */
+  }, [tasks]) /* Esse array aqui faz a funcção ser executada sempre que o array mudar */
+
   return (
     <div>
       <Header />
