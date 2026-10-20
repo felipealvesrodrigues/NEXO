@@ -11,7 +11,6 @@ export interface task { /*  */
 function Header() {
   return (
     <header>
-      <h1>Nexo</h1>
     </header>
   );
 }
@@ -121,25 +120,22 @@ export default function App() {
     }
     return []; /* Se não houver nada salvo, inicia com um array vazio */
   })
+  const [darkMode, setDarkMode] = useState(true)
   const [newTaskTitle, setNewTaskTitle] = useState(''); /* Esse setNewTask vai pegar o que ta escrito lá no form. O setNewTask tbm está diretamente ligado ao campo de escrever o texto*/
   const [newTaskDescription, setNewTaskDescription] = useState('')
   const handleAddTask = (e: React.FormEvent) => { /* handleAddTask, o parâmetro "e" e o setNewTaskTitle estão conctados. O setNewTaskTitle salva na memória do react o que o "e" capturou da digitação (por meio do e.target.value) e quando Enter ou o botão de enviar é apertado, o handle pega o que tá salvo SetNew e cria uma nova task com ele. */
     e.preventDefault(); /* Previne que a página recarregue ao enviar o formulário */
-
     if (!newTaskTitle.trim()) return; /* Não adiciona se o texto estiver vazio */
-
     const newTask = {
       id: Date.now(), /* Gera um id baseado no tinmestamp atual */
       title: newTaskTitle,
       description: newTaskDescription,
       status: 'to_do' /* Vai fazer com que toda nova task entre na aba de "A fazer" */
     };
-
     setTasks([...tasks, newTask]); /* Adiciona ua nova task mantendo as antigas */
     setNewTaskTitle('')/* Limpa o campo de texto depois de enviar */
     setNewTaskDescription('');
   }
-
   const handleMoveTask = (id: number, newStatus: string) => {
     setTasks(
       tasks.map((task) => 
@@ -167,6 +163,11 @@ export default function App() {
   }, [tasks]) /* Esse array aqui faz a funcção ser executada sempre que o array mudar */
 
   return (
+    <div className={darkMode ? 'dark' : ''}> 
+      <div className="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
+      <h1 className="text-3xl font-bold tracking-tight ">NEXO kanban</h1>
+    </header>
     <div>
       <Header />
       <form onSubmit={handleAddTask} style={{padding: '16px', display: 'flex', gap: '8px'}}>
@@ -206,6 +207,8 @@ export default function App() {
             <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
           ))}
         </Column>
+        </div>
+        </div>
       </div>
     </div>
   );
