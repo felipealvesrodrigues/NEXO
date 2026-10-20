@@ -37,13 +37,13 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
   }
 
   return (
-    <div style={{border: '1px solid #475569', padding: '8px', marginBottom: '10px', borderRadius: '5px'}}>
-      <p style={{margin: '0', marginTop: '6px', color: '#f8fafc'}}>
+    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700/80">
+      <p className="text-xl font-semibold text-slate-800 dark:text-slate-100 mt-1">
         {title}
       </p>
 
       {description && (
-        <p style={{margin: '4px 0', fontSize: '0.9rem', color: '#94a3b8'}}>
+        <p className="text-lg text-slate-500 dark:text-slate-400 mt-1">
           {description}
         </p>
       )}
@@ -101,11 +101,11 @@ interface ColumnProps{
 
 function Column({title, children}: ColumnProps ) {
   return(
-    <div style={{border: '1px solid #fbfcff', padding: '16px', margin: '10px', borderRadius: '8px', minWidth: '250px'}}>
-      <h2 style={{marginBottom: '10px'}}>
+    <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-500px border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
+      <h2 className="front-semibolb text-lg text-slate-700 dark:text-slate-200 mb-2">
         {title}
       </h2>
-      <div>
+      <div className="flex flex-col gap-3">
         {children}
       </div>
     </div>
@@ -167,6 +167,10 @@ export default function App() {
       <div className="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
     <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
       <h1 className="text-3xl font-bold tracking-tight ">NEXO kanban</h1>
+      <button onClick={() => setDarkMode(!darkMode)}
+      className="px-4 py-2 text-sm front-medium rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+        {darkMode ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
+      </button>
     </header>
     <div>
       <Header />
@@ -213,3 +217,4 @@ export default function App() {
     </div>
   );
 }
+/* className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-500px border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3  */
