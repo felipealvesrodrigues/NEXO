@@ -50,12 +50,12 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
 
       {/* Se tiver no modo edição, isso aq vai mostrar os inputs para serem alterados */}
       {isEditing ? (
-        <div style={{display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '8px'}}>
+        <div className="flex flex-col gap-2">
           <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
-          style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc' }}
+          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Descrição" 
-          style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical' }}
+          className="w-full" /* Parei aqui */
           />
           <button onClick={handleSave} style={{ cursor: 'pointer', padding: '4px' }}>
             Salvar
@@ -101,8 +101,8 @@ interface ColumnProps{
 
 function Column({title, children}: ColumnProps ) {
   return(
-    <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-500px border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
-      <h2 className="front-semibolb text-lg text-slate-700 dark:text-slate-200 mb-2">
+    <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-12 border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
+      <h2 className="font-semibolb text-2xl text-slate-700 dark:text-slate-200 mb-2 font-bold">
         {title}
       </h2>
       <div className="flex flex-col gap-3">
@@ -165,54 +165,54 @@ export default function App() {
   return (
     <div className={darkMode ? 'dark' : ''}> 
       <div className="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
-    <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
-      <h1 className="text-3xl font-bold tracking-tight ">NEXO kanban</h1>
-      <button onClick={() => setDarkMode(!darkMode)}
-      className="px-4 py-2 text-sm front-medium rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
-        {darkMode ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
-      </button>
-    </header>
-    <div>
-      <Header />
-      <form onSubmit={handleAddTask} style={{padding: '16px', display: 'flex', gap: '8px'}}>
-        <input
-          type="text" 
-          placeholder="Digite o título da nova tarefa..."
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)} /* Toda vez que uma letra é digitada no input, o SetNewTaskTitle captura o evento e.target.value e atualiza o estado newTaskTitle.*/
-          style={{padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '300px'}}
-          />
-
-          <textarea 
-          placeholder="Descrição da tarefa (opcional)"
-          value={newTaskDescription}
-          onChange={(e) => setNewTaskDescription(e.target.value)}
-          style={{padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: '300px', resize: 'vertical'}}
-          />
-
-          <button type="submit" style={{padding: ' 8px 18px', cursor: 'pointer'}}>
-            Adicionar
+        <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
+          <h1 className="text-3xl font-bold tracking-tight ">NEXO kanban</h1>
+          <button onClick={() => setDarkMode(!darkMode)}
+          className="px-4 py-2 text-sm font-medium rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+            {darkMode ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
           </button>
-      </form>
+        </header>
+        <div>
+          <Header />
+          <form onSubmit={handleAddTask} className="flex flex-wrap gap-3 mb-8 p-4 bg-white dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800">
+            <input
+              type="text" 
+              placeholder="Digite o título da nova tarefa..."
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)} /* Toda vez que uma letra é digitada no input, o SetNewTaskTitle captura o evento e.target.value e atualiza o estado newTaskTitle.*/
+              className="px-3 py-2 border bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-72"
+              />
 
-      <div style={{display: 'flex', gap: '16px', padding: '16px'}}> {/* Englobei numa div para fazer eles ficarem lado a lado */}
-        <Column title="A fazer">
-          {tasks 
-          .filter((task) => task.status === 'to_do')
-          .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
-          ))}
-        </Column> 
-        
-        <Column title="Em progresso">
-        {tasks
-          .filter((task) => task.status === 'in_progress')
-          .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-            <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
-          ))}
-        </Column>
-        </div>
-        </div>
+              <textarea 
+              placeholder="Descrição da tarefa (opcional)"
+              value={newTaskDescription}
+              onChange={(e) => setNewTaskDescription(e.target.value)}
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline:none focus:ring-2 focus:indigo-500 w-72 h-10 resize-none"
+              />
+
+              <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg transition cursor-pointer shadow-sm">
+                Adicionar
+              </button>
+          </form>
+
+          <div className="flex gap-6 overflow-x-auto pb-4"> {/* Englobei numa div para fazer eles ficarem lado a lado */}
+            <Column title="A fazer">
+              {tasks 
+              .filter((task) => task.status === 'to_do')
+              .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
+                <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
+              ))}
+            </Column> 
+            
+            <Column title="Em progresso">
+            {tasks
+              .filter((task) => task.status === 'in_progress')
+              .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
+                <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
+              ))}
+            </Column>
+            </div>
+            </div>
       </div>
     </div>
   );
