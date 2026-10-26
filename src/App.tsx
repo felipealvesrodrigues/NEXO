@@ -52,41 +52,42 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
       {isEditing ? (
         <div className="flex flex-col gap-2">
           <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
-          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500"
           />
           <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Descrição" 
-          className="w-full" /* Parei aqui */
+          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 resize-none" /* Parei aqui */
           />
-          <button onClick={handleSave} style={{ cursor: 'pointer', padding: '4px' }}>
+          <button onClick={handleSave}
+          className="bg-indigo-600 hover:bg-indigo-700 rounded text-white py-[2.3px] transition cursor-pointer w-24 self-center"> 
             Salvar
           </button>
         </div>
       ) : (
         /* Se não tiver no moddo de edição, mostra o botão de editar */
         <> {/* isso aq é pra substituir um div, permitindo retornar mais de um elemento pai de uma vez (tipo o button + a div) */}
-        <button onClick={() => setIsEditing(true)} style={{cursor: 'pointer', padding: '2px 6px', marginTop: '4px'}}>
+        <button onClick={() => setIsEditing(true)} className="self-start text-indigo-600 dark:text-indigo-400 cursor-pointer mt-1">
           Editar
         </button>
         </>
       )}
 
-      <div style={{display: 'flex', gap: '8px', marginTop: '9px' }}>
+      <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100 dark:border-slate-700">
       {status === 'to_do' && (
         <button onClick={() => onMove(id, 'in_progress')}
-        style={{ cursor: 'pointer', padding: '4px 8px'}}>
+        className="px-3 py-1 font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
           Avançar
         </button>
       )} 
 
       {status === 'in_progress' && (
         <button onClick={() => onMove(id, 'to_do')}
-        style={{ cursor: 'pointer', padding: '4px 8px'}}>
+        className="px-3 py-1 font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
           Voltar
         </button>
       )}
 
       <button onClick={() => onDelete(id)} 
-      style={{ cursor: 'pointer', padding: '4px 8px', backgroundColor: '#ef4444',color: '#fff' , border: 'none', borderRadius: '4px'}}>
+      className="ml-auto px-3 py-1 bg-rose-500 hover:bg-rose-600 dark:bg-red-700 dark:hover:bg-red-800 rounded transition cursor-pointer">
         Excluir
       </button>
       </div>
@@ -102,7 +103,7 @@ interface ColumnProps{
 function Column({title, children}: ColumnProps ) {
   return(
     <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-12 border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
-      <h2 className="font-semibolb text-2xl text-slate-700 dark:text-slate-200 mb-2 font-bold">
+      <h2 className="text-2xl text-slate-700 dark:text-slate-200 mb-2 font-bold">
         {title}
       </h2>
       <div className="flex flex-col gap-3">
@@ -121,6 +122,15 @@ export default function App() {
     return []; /* Se não houver nada salvo, inicia com um array vazio */
   })
   const [darkMode, setDarkMode] = useState(true)
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
+  
   const [newTaskTitle, setNewTaskTitle] = useState(''); /* Esse setNewTask vai pegar o que ta escrito lá no form. O setNewTask tbm está diretamente ligado ao campo de escrever o texto*/
   const [newTaskDescription, setNewTaskDescription] = useState('')
   const handleAddTask = (e: React.FormEvent) => { /* handleAddTask, o parâmetro "e" e o setNewTaskTitle estão conctados. O setNewTaskTitle salva na memória do react o que o "e" capturou da digitação (por meio do e.target.value) e quando Enter ou o botão de enviar é apertado, o handle pega o que tá salvo SetNew e cria uma nova task com ele. */
@@ -162,8 +172,7 @@ export default function App() {
     localStorage.setItem('nexo_tasks', JSON.stringify(tasks)) /* o stringfy faz o inverso do parse, ele transforma o array de volta em um texto para que ele seja salvo no localStorage */
   }, [tasks]) /* Esse array aqui faz a funcção ser executada sempre que o array mudar */
 
-  return (
-    <div className={darkMode ? 'dark' : ''}> 
+  return ( 
       <div className="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
         <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
           <h1 className="text-3xl font-bold tracking-tight ">NEXO kanban</h1>
@@ -187,10 +196,10 @@ export default function App() {
               placeholder="Descrição da tarefa (opcional)"
               value={newTaskDescription}
               onChange={(e) => setNewTaskDescription(e.target.value)}
-              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline:none focus:ring-2 focus:indigo-500 w-72 h-10 resize-none"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline:none focus:ring-2 focus:ring-indigo-500 w-72 h-10 resize-none"
               />
 
-              <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-lg transition cursor-pointer shadow-sm">
+              <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition cursor-pointer shadow-sm">
                 Adicionar
               </button>
           </form>
@@ -214,7 +223,6 @@ export default function App() {
             </div>
             </div>
       </div>
-    </div>
+
   );
 }
-/* className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-500px border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3  */
