@@ -55,7 +55,7 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
           className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500"
           />
           <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Descrição" 
-          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 resize-none" /* Parei aqui */
+          className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
           />
           <button onClick={handleSave}
           className="bg-indigo-600 hover:bg-indigo-700 rounded text-white py-[2.3px] transition cursor-pointer w-24 self-center"> 
@@ -72,24 +72,24 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
       )}
 
       <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100 dark:border-slate-700">
-      {status === 'to_do' && (
-        <button onClick={() => onMove(id, 'in_progress')}
-        className="px-3 py-1 font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
-          Avançar
-        </button>
-      )} 
+      <button onClick={() => onDelete(id)} 
+      className="mr-auto px-3 py-1 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 rounded transition cursor-pointer">
+        Excluir
+      </button>
 
       {status === 'in_progress' && (
         <button onClick={() => onMove(id, 'to_do')}
-        className="px-3 py-1 font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
+        className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
           Voltar
         </button>
       )}
 
-      <button onClick={() => onDelete(id)} 
-      className="ml-auto px-3 py-1 bg-rose-500 hover:bg-rose-600 dark:bg-red-700 dark:hover:bg-red-800 rounded transition cursor-pointer">
-        Excluir
-      </button>
+      {status === 'to_do' && (
+        <button onClick={() => onMove(id, 'in_progress')}
+        className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer">
+          Avançar
+        </button>
+      )}
       </div>
     </div>
   )
@@ -196,7 +196,7 @@ export default function App() {
               placeholder="Descrição da tarefa (opcional)"
               value={newTaskDescription}
               onChange={(e) => setNewTaskDescription(e.target.value)}
-              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline:none focus:ring-2 focus:ring-indigo-500 w-72 h-10 resize-none"
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-72 h-10 resize-none"
               />
 
               <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition cursor-pointer shadow-sm">
