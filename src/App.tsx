@@ -29,6 +29,7 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
   const[isEditing, setIsEditing] = useState(false) /* O isEditing vai servir pra ativar o modo de edição, por padrão ele vem false. Lá em baixo tem a função que deixa ele true */
   const[editTitle, setEditTitle] = useState(title) /* editTitle e o editDescription guardam o que o usuário está digitando */
   const[editDescription, setEditDescription] = useState(description || '')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const  handleSave = () => { 
     if (!editTitle.trim()) return; // Não permite salvar se o nome tiver vazio
@@ -37,10 +38,27 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700/80">
+    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700/80 relative">
       <p className="text-xl font-semibold text-slate-800 dark:text-slate-100 mt-1">
         {title}
       </p>
+
+      <div className="absolute top-3 right-3">
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+          </svg>
+        </button>
+      </div>
+
+      {isMenuOpen && (
+        <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10" >
+          <button onClick={() => {setIsEditing(true); setIsMenuOpen(false)}}
+           className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-700 ">
+
+          </button>
+        </div>
+      )}
 
       {description && (
         <p className="text-lg text-slate-500 dark:text-slate-400 mt-1">
@@ -102,7 +120,7 @@ interface ColumnProps{
 
 function Column({title, children}: ColumnProps ) {
   return(
-    <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-12 border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
+    <div className="bg-slate-200/60 dark:bg-slate-800/60 rounded-xl p-4 w-80 min-h-30 border border-slate-300/50 dark:border-slate-700/50 flex flex-col gap-3">
       <h2 className="text-2xl text-slate-700 dark:text-slate-200 mb-2 font-bold">
         {title}
       </h2>
@@ -204,7 +222,7 @@ export default function App() {
               </button>
           </form>
 
-          <div className="flex gap-6 overflow-x-auto pb-4"> {/* Englobei numa div para fazer eles ficarem lado a lado */}
+          <div className="flex items-start gap-6 overflow-x-auto pb-4"> {/* Englobei numa div para fazer eles ficarem lado a lado */}
             <Column title="A fazer">
               {tasks 
               .filter((task) => task.status === 'to_do')
@@ -212,7 +230,7 @@ export default function App() {
                 <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
               ))}
             </Column> 
-            
+
             <Column title="Em progresso">
             {tasks
               .filter((task) => task.status === 'in_progress')
@@ -220,9 +238,8 @@ export default function App() {
                 <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
               ))}
             </Column>
-            </div>
-            </div>
+          </div>
+        </div>
       </div>
-
   );
 }
