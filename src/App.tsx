@@ -54,7 +54,7 @@ function Card({ title, description, id, status, onMove, onDelete, onEdit }: Card
       {isMenuOpen && (
         <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10" >
           <button onClick={() => {setIsEditing(true); setIsMenuOpen(false)}}
-           className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-700 ">
+           className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-700 /* parei aqui */ ">
 
           </button>
         </div>
