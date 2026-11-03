@@ -5,7 +5,7 @@ interface CardProps {
   id: number;
   title: string;
   description?: string;
-  status: string;
+  status: TaskStatus;
   onMove: (id: number, newStatus: TaskStatus) => void;
   onDelete: (id: number) => void;
   onEdit: (
@@ -69,7 +69,7 @@ export function Card({
                 setIsEditing(true);
                 setIsMenuOpen(false);
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-700 /* parei aqui */ "
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               ✏️ Editar
             </button>
@@ -123,22 +123,41 @@ export function Card({
 
       {/* Rodapé com os botões de mover pra outra coluna */}
       <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100 dark:border-slate-700">
-
+        {/* EM PROGRESSO */}
         {status === "in_progress" && (
-          <button
-            onClick={() => onMove(id, "to_do")}
-            className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
-          >
-            Voltar
-          </button>
+          <>
+            <button
+              onClick={() => onMove(id, "to_do")}
+              className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
+            >
+              Voltar
+            </button>
+
+            <button
+              onClick={() => onMove(id, "done")}
+              className="px-3 py-1 ml-auto bg-emerald-600 rounded hover:bg-emerald-700 transition text-white "
+            >
+              Concluir
+            </button>
+          </>
         )}
 
+        {/* A FAZER */}
         {status === "to_do" && (
           <button
             onClick={() => onMove(id, "in_progress")}
             className="px-3 py-1 font-medium ml-auto bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
           >
             Avançar
+          </button>
+        )}
+
+        {status === "done" && (
+          <button
+            onClick={() => onMove(id, "in_progress")}
+            className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
+          >
+            Reabrir
           </button>
         )}
       </div>

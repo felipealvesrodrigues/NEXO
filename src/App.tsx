@@ -62,6 +62,11 @@ export default function App() {
     localStorage.setItem('nexo_tasks', JSON.stringify(tasks)) /* o stringfy faz o inverso do parse, ele transforma o array de volta em um texto para que ele seja salvo no localStorage */
   }, [tasks]) /* Esse array aqui faz a funcção ser executada sempre que o array mudar */
 
+  const todotasks = tasks.filter((task) => task.status === 'to_do')
+  const inProgressTasks = tasks.filter((task) => task.status === 'in_progress')
+  const doneTasks = tasks.filter((task) => task.status === 'done')
+
+
   return ( 
       <div className="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
         <header className="flex justify-between items-center mb-8 border-b border-slate-300 dark:border-slate-800 p-4">
@@ -94,20 +99,23 @@ export default function App() {
           </form>
 
           <div className="flex items-start gap-6 overflow-x-auto pb-4"> {/* Englobei numa div para fazer eles ficarem lado a lado */}
-            <Column title="A fazer">
-              {tasks 
-              .filter((task) => task.status === 'to_do')
-              .map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
+            <Column title="A fazer" count={todotasks.length}>
+              {todotasks.map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
                 <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
               ))}
             </Column> 
 
-            <Column title="Em progresso">
-            {tasks
-              .filter((task) => task.status === 'in_progress')
-              .map((task)=> ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
+            <Column title="Em progresso" count={inProgressTasks.length}>
+            {inProgressTasks.map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
                 <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
               ))}
+            </Column>
+
+            <Column title="Concluído" count={doneTasks.length}>
+            {doneTasks
+            .map((task) => (
+              <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
+            ))}
             </Column>
           </div>
         </div>
