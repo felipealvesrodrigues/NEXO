@@ -5,15 +5,24 @@ import { Card } from "./components/Card";
 
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const savedTasks = localStorage.getItem('nexo_tasks');
+    const savedTasks = localStorage.getItem('nexo_tasks'); /* Aparentemente isso aq é uma const temporária só pra ver o que ta guardado */
     if (savedTasks) {
       return JSON.parse(savedTasks); /* Converte o texto JSON de volta para array de objetos JS que o React consegue entender, porque o localStorage so consegue guardar textos simples. */
     }
-    return []; /* Se não houver nada salvo, inicia com um array vazio */
+    return []; /* Se não houver nada salvo, inicia com um array vazio. Aq só é retornado um array vazio pq tasks é uma lista de tarefas. Se fosse um valor booleano tipo o dark mode, seria return true */
   })
-  const [darkMode, setDarkMode] = useState(true)
+  
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('nexo_theme');
+    if (savedTheme) {
+      return JSON.parse(savedTheme)
+    }
+    return true
+  })
+
 
   useEffect(() => {
+    localStorage.setItem('nexo_theme', JSON.stringify(darkMode))
     if (darkMode) {
       document.documentElement.classList.add('dark')
     } else {
