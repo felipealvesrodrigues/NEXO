@@ -1,11 +1,13 @@
 import { useState } from "react";
-import type { TaskStatus } from "../types/task";
+import type { TaskStatus, TaskPriority } from "../types/task";
+
 
 interface CardProps {
   id: number;
   title: string;
   description?: string;
   status: TaskStatus;
+  priority?: TaskPriority;
   onMove: (id: number, newStatus: TaskStatus) => void;
   onDelete: (id: number) => void;
   onEdit: (
@@ -20,6 +22,7 @@ export function Card({
   description,
   id,
   status,
+  priority,
   onMove,
   onDelete,
   onEdit,

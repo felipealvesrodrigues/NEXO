@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import type { Task, TaskStatus } from "./types/task";
+import type { Task, TaskStatus, TaskPriority } from "./types/task";
 import { Column } from "./components/Column";
 import { Card } from "./components/Card";
 
@@ -32,6 +32,7 @@ export default function App() {
   
   const [newTaskTitle, setNewTaskTitle] = useState(''); /* Esse setNewTask vai pegar o que ta escrito lá no form. O setNewTask tbm está diretamente ligado ao campo de escrever o texto*/
   const [newTaskDescription, setNewTaskDescription] = useState('')
+  const [newTaskPriority, setNewTaskPriority] = useState<TaskPriority>('medium')
   const handleAddTask = (e: React.FormEvent) => { /* handleAddTask, o parâmetro "e" e o setNewTaskTitle estão conctados. O setNewTaskTitle salva na memória do react o que o "e" capturou da digitação (por meio do e.target.value) e quando Enter ou o botão de enviar é apertado, o handle pega o que tá salvo SetNew e cria uma nova task com ele. */
     e.preventDefault(); /* Previne que a página recarregue ao enviar o formulário */
     if (!newTaskTitle.trim()) return; /* Não adiciona se o texto estiver vazio */
@@ -39,11 +40,13 @@ export default function App() {
       id: Date.now(), /* Gera um id baseado no tinmestamp atual */
       title: newTaskTitle,
       description: newTaskDescription,
-      status: 'to_do' /* Vai fazer com que toda nova task entre na aba de "A fazer" */
+      status: 'to_do', /* Vai fazer com que toda nova task entre na aba de "A fazer" */
+      priority: newTaskPriority
     };
     setTasks([...tasks, newTask]); /* Adiciona ua nova task mantendo as antigas */
     setNewTaskTitle('')/* Limpa o campo de texto depois de enviar */
     setNewTaskDescription('');
+    setNewTaskPriority('medium')
   }
   const handleMoveTask = (id: number, newStatus: TaskStatus) => {
     setTasks(
@@ -52,6 +55,8 @@ export default function App() {
       )
     );
   };
+
+  
 
   const handleDeleteTask = (id: number) => {
     setTasks(tasks.filter((task) => task.id !== id))
@@ -102,6 +107,15 @@ export default function App() {
               className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-72 h-10 resize-none"
               />
 
+              <select 
+              value={newTaskPriority}
+              onChange={(e) => setNewTaskPriority(e.target.value as TaskPriority)}
+              className="px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                <option value="low">Baixo</option>
+                <option value="medium">Médio</option>
+                <option value="high">Alto</option>
+              </select>
+
               <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition cursor-pointer shadow-sm">
                 Adicionar
               </button>
@@ -110,7 +124,7 @@ export default function App() {
           <div className="flex items-start gap-6 overflow-x-auto pb-4"> {/* Englobei numa div para fazer eles ficarem lado a lado */}
             <Column title="A fazer" count={todotasks.length}>
               {todotasks.map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-                <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
+                <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask} priority={task.priority}/>
               ))}
             </Column> 
 
