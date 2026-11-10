@@ -1,15 +1,17 @@
 import { useState } from "react";
-import type { TaskStatus, TaskPriority } from "../types/task";
+import type { TaskPriority } from "../types/task";
 
 interface CardProps {
   id: number;
   title: string;
   description?: string;
-  status: TaskStatus;
   priority?: TaskPriority;
-  onMove: (id: number, newStatus: TaskStatus) => void;
+  onMovePrev?: () => void;
+  onMoveNext?: () => void;
+  isNextLastColumn?: boolean;
+  isLastColumn?: boolean;
   onDelete: (id: number) => void;
-  onEdit: () => void; // Abre o modal centralizado de edição
+  onEdit: () => void;
 }
 
 const priorityStyles: Record<TaskPriority, { label: string; classes: string }> = {
@@ -31,9 +33,11 @@ export function Card({
   title,
   description,
   id,
-  status,
   priority,
-  onMove,
+  onMovePrev,
+  onMoveNext,
+  isNextLastColumn,
+  isLastColumn,
   onDelete,
   onEdit,
 }: CardProps) {
@@ -45,7 +49,7 @@ export function Card({
     (title && title.length > 30) || (description && description.length > 50);
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/80 relative transition hover:shadow-md">
+    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs border border-slate-200 dark:border-slate-700/80 relative transition hover:shadow-md">
       {/* Botão de 3 Pontinhos no Canto Superior Direito */}
       <div className="absolute top-3 right-3">
         <button
@@ -59,7 +63,7 @@ export function Card({
         </button>
       </div>
 
-      {/* Menu Kebab Dropdown */}
+      {/* Menu Dropdown de Opções */}
       {isMenuOpen && (
         <>
           <div
@@ -117,12 +121,10 @@ export function Card({
               title={isExpanded ? "Recolher texto" : "Ver texto completo"}
             >
               {isExpanded ? (
-                // Ícone Recolher (Chevron Up)
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               ) : (
-                // Ícone Expandir (Chevron Down)
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -131,7 +133,7 @@ export function Card({
           )}
         </div>
 
-        {/* Descrição com limite configurado ou expandido */}
+        {/* Descrição */}
         {description && (
           <p
             className={`text-sm text-slate-500 dark:text-slate-400 mt-1.5 break-words ${
@@ -143,44 +145,32 @@ export function Card({
         )}
       </div>
 
-      {/* Rodapé com botões de movimentação */}
-      <div className="flex items-center gap-2 mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800">
-        {status === "in_progress" && (
-          <>
+      {/* Rodapé com botões de movimentação dinâmica entre colunas */}
+      {(onMovePrev || onMoveNext) && (
+        <div className="flex items-center gap-2 mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+          {onMovePrev && (
             <button
-              onClick={() => onMove(id, "to_do")}
+              onClick={onMovePrev}
               className="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
             >
-              Voltar
+              {isLastColumn ? "Reabrir" : "Voltar"}
             </button>
+          )}
 
+          {onMoveNext && (
             <button
-              onClick={() => onMove(id, "done")}
-              className="px-3 py-1 text-xs font-medium ml-auto bg-emerald-600 hover:bg-emerald-700 transition text-white rounded-lg cursor-pointer"
+              onClick={onMoveNext}
+              className={`px-3 py-1 text-xs font-medium ml-auto rounded-lg transition cursor-pointer ${
+                isNextLastColumn
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+              }`}
             >
-              Concluir
+              {isNextLastColumn ? "Concluir" : "Avançar"}
             </button>
-          </>
-        )}
-
-        {status === "to_do" && (
-          <button
-            onClick={() => onMove(id, "in_progress")}
-            className="px-3 py-1 text-xs font-medium ml-auto bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
-          >
-            Avançar
-          </button>
-        )}
-
-        {status === "done" && (
-          <button
-            onClick={() => onMove(id, "in_progress")}
-            className="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
-          >
-            Reabrir
-          </button>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

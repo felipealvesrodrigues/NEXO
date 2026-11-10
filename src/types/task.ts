@@ -1,11 +1,26 @@
-export type TaskStatus = 'to_do' | 'in_progress' | 'done' /* Isso aqui ta especificando os valores que serão aceitos lá em status */
+export type TaskPriority = 'low' | 'medium' | 'high';
 
-export type TaskPriority = 'low' | 'medium' | 'high'
+// O status agora é flexível (string) para suportar qualquer ID de coluna dinâmica
+export type TaskStatus = string;
 
 export interface Task {
-    id: number;
-    title: string; 
-    description?: string;
-    priority?: TaskPriority;
-    status: TaskStatus; /* Não colocar "string" aqui, pq se houver um erro de digitação, o typescript não vai detectar. Srting vai aceitar literalmente qualquer texto. Por isso o type TaskStatus foi criado, ele vai servir como um filtro, permitindo que somente as strings que estão dentro dele sejam aceitas. Além do autocomplete do vs conseguir ajudar */
+  id: number;
+  title: string; 
+  description?: string;
+  priority?: TaskPriority;
+  status: TaskStatus;
+}
+
+// Cores pré-selecionadas para as colunas
+export type ColumnColor = 'slate' | 'blue' | 'purple' | 'emerald' | 'amber' | 'rose';
+
+// Opções de largura para as colunas
+export type ColumnWidth = 'w-72' | 'w-80' | 'w-96' | 'w-[420px]';
+
+export interface ColumnData {
+  id: string;
+  title: string;
+  color?: ColumnColor;
+  width?: ColumnWidth;
+  priority?: TaskPriority;
 }

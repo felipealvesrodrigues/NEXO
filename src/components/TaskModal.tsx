@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import type { Task, TaskPriority, TaskStatus } from "../types/task";
+import type { Task, TaskPriority, TaskStatus, ColumnData } from "../types/task";
 
 interface TaskModalProps {
   mode: "create" | "edit";
   task?: Task | null;
   defaultStatus?: TaskStatus;
+  columns?: ColumnData[];
   onClose: () => void;
   onSave: (taskData: {
     id?: number;
@@ -25,6 +26,7 @@ export function TaskModal({
   mode,
   task,
   defaultStatus = "to_do",
+  columns,
   onClose,
   onSave,
 }: TaskModalProps) {
@@ -41,6 +43,14 @@ export function TaskModal({
   const [description, setDescription] = useState(initialDescription);
   const [priority, setPriority] = useState<TaskPriority>(initialPriority);
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
+
+  const currentColumnTitle =
+    columns?.find((c) => c.id === status)?.title ||
+    (status === "to_do"
+      ? "A fazer"
+      : status === "in_progress"
+      ? "Em progresso"
+      : "Concluído");
 
   // Verifica se o usuário alterou algum campo
   const hasChanges =
@@ -87,11 +97,7 @@ export function TaskModal({
             {mode === "create" ? "Nova Tarefa" : "Editar Tarefa"}
           </h3>
           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            {status === "to_do"
-              ? "A fazer"
-              : status === "in_progress"
-              ? "Em progresso"
-              : "Concluído"}
+            {currentColumnTitle}
           </span>
         </div>
 
@@ -153,9 +159,19 @@ export function TaskModal({
                 onChange={(e) => setStatus(e.target.value as TaskStatus)}
                 className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               >
-                <option value="to_do">A fazer</option>
-                <option value="in_progress">Em progresso</option>
-                <option value="done">Concluído</option>
+                {columns && columns.length > 0 ? (
+                  columns.map((col) => (
+                    <option key={col.id} value={col.id}>
+                      {col.title}
+                    </option>
+                  ))
+                ) : (
+                  <>
+                    <option value="to_do">A fazer</option>
+                    <option value="in_progress">Em progresso</option>
+                    <option value="done">Concluído</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
