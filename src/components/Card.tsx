@@ -14,8 +14,24 @@ interface CardProps {
     id: number,
     editTitle: string,
     editDescription?: string,
-  ) => void; /* A ? é pra deixar opcional */
+    editPriority?: TaskPriority
+  ) => void;
 }
+
+const priorityStyles: Record<TaskPriority, { label: string; classes: string }> = {
+  low: {
+    label: "Baixa",
+    classes: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+  },
+  medium: {
+    label: "Média",
+    classes: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+  },
+  high: {
+    label: "Alta",
+    classes: "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800",
+  },
+};
 
 export function Card({
   title,
@@ -27,21 +43,15 @@ export function Card({
   onDelete,
   onEdit,
 }: CardProps) {
-  const [isEditing, setIsEditing] =
-    useState(
-      false,
-    ); /* O isEditing vai servir pra ativar o modo de edição, por padrão ele vem false. Lá em baixo tem a função que deixa ele true */
-  const [editTitle, setEditTitle] =
-    useState(
-      title,
-    ); /* editTitle e o editDescription guardam o que o usuário está digitando */
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(title);
   const [editDescription, setEditDescription] = useState(description || "");
-
+  const [editPriority, setEditPriority] = useState<TaskPriority>(priority || "medium");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSave = () => {
     if (!editTitle.trim()) return; // Não permite salvar se o nome tiver vazio
-    onEdit(id, editTitle, editDescription); // chama a função do App passando o id, o novo titulo e a nova descrição
+    onEdit(id, editTitle, editDescription, editPriority); // chama a função do App passando o id, novo titulo, descrição e prioridade
     setIsEditing(false); //fecha o modo de edição
   };
 
@@ -104,16 +114,35 @@ export function Card({
             placeholder="Descrição"
             className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
           />
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500 dark:text-slate-400">Prioridade:</span>
+            <select
+              value={editPriority}
+              onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
+              className="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-xs text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="low">Baixa</option>
+              <option value="medium">Média</option>
+              <option value="high">Alta</option>
+            </select>
+          </div>
           <button
             onClick={handleSave}
-            className="bg-indigo-600 hover:bg-indigo-700 rounded text-white py-[2.3px] transition cursor-pointer w-24 self-center"
+            className="bg-indigo-600 hover:bg-indigo-700 rounded text-white py-1 transition cursor-pointer w-24 self-center text-xs font-medium mt-1"
           >
             Salvar
           </button>
         </div>
       ) : (
         <div className="pr-6">
-          <p className="text-xl font-semibold text-slate-800 dark:text-slate-100 mt-1 ">
+          {priority && (
+            <span
+              className={`inline-block px-2 py-0.5 text-[11px] font-semibold rounded border mb-1.5 ${priorityStyles[priority].classes}`}
+            >
+              {priorityStyles[priority].label}
+            </span>
+          )}
+          <p className="text-xl font-semibold text-slate-800 dark:text-slate-100">
             {title}
           </p>
           {description && (

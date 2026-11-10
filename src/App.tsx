@@ -62,15 +62,25 @@ export default function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
-  const handleEditTask = (id: number, editTitle: string, editDescription?: string) => {
+  const handleEditTask = (
+    id: number,
+    editTitle: string,
+    editDescription?: string,
+    editPriority?: TaskPriority
+  ) => {
     setTasks(
-      tasks.map((task) => /* percorre as task */
-      task.id === id /* se o id for igual */
-      ? {...task, title: editTitle, description: editDescription } /* muda as info titulo e descrição */
-      : task /* se não, so deixa as tasks do mesmo jeito */
-     )
-    )
-  }
+      tasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              title: editTitle,
+              description: editDescription,
+              ...(editPriority ? { priority: editPriority } : {}),
+            }
+          : task
+      )
+    );
+  };
 
   useEffect(() => {
     localStorage.setItem('nexo_tasks', JSON.stringify(tasks)) /* o stringfy faz o inverso do parse, ele transforma o array de volta em um texto para que ele seja salvo no localStorage */
@@ -129,16 +139,35 @@ export default function App() {
             </Column> 
 
             <Column title="Em progresso" count={inProgressTasks.length}>
-            {inProgressTasks.map((task) => ( /* O map pega os itens filtrados pelo filter e converte em um componente de react, uma tarefa de cada vez */
-                <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
+              {inProgressTasks.map((task) => (
+                <Card
+                  key={task.id}
+                  title={task.title}
+                  description={task.description}
+                  id={task.id}
+                  status={task.status}
+                  priority={task.priority}
+                  onMove={handleMoveTask}
+                  onDelete={handleDeleteTask}
+                  onEdit={handleEditTask}
+                />
               ))}
             </Column>
 
             <Column title="Concluído" count={doneTasks.length}>
-            {doneTasks
-            .map((task) => (
-              <Card key={task.id} title={task.title} description={task.description} id={task.id} status={task.status} onMove={handleMoveTask} onDelete={handleDeleteTask} onEdit={handleEditTask}/>
-            ))}
+              {doneTasks.map((task) => (
+                <Card
+                  key={task.id}
+                  title={task.title}
+                  description={task.description}
+                  id={task.id}
+                  status={task.status}
+                  priority={task.priority}
+                  onMove={handleMoveTask}
+                  onDelete={handleDeleteTask}
+                  onEdit={handleEditTask}
+                />
+              ))}
             </Column>
           </div>
         </div>
