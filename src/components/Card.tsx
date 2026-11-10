@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { TaskStatus, TaskPriority } from "../types/task";
 
-
 interface CardProps {
   id: number;
   title: string;
@@ -10,12 +9,7 @@ interface CardProps {
   priority?: TaskPriority;
   onMove: (id: number, newStatus: TaskStatus) => void;
   onDelete: (id: number) => void;
-  onEdit: (
-    id: number,
-    editTitle: string,
-    editDescription?: string,
-    editPriority?: TaskPriority
-  ) => void;
+  onEdit: () => void; // Abre o modal centralizado de edição
 }
 
 const priorityStyles: Record<TaskPriority, { label: string; classes: string }> = {
@@ -43,24 +37,21 @@ export function Card({
   onDelete,
   onEdit,
 }: CardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(title);
-  const [editDescription, setEditDescription] = useState(description || "");
-  const [editPriority, setEditPriority] = useState<TaskPriority>(priority || "medium");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const handleSave = () => {
-    if (!editTitle.trim()) return; // Não permite salvar se o nome tiver vazio
-    onEdit(id, editTitle, editDescription, editPriority); // chama a função do App passando o id, novo titulo, descrição e prioridade
-    setIsEditing(false); //fecha o modo de edição
-  };
+  // Verifica se o texto é longo para exibir o botão de expandir/recolher
+  const isTextLong =
+    (title && title.length > 30) || (description && description.length > 50);
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700/80 relative">
+    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/80 relative transition hover:shadow-md">
+      {/* Botão de 3 Pontinhos no Canto Superior Direito */}
       <div className="absolute top-3 right-3">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+          title="Opções do card"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -68,30 +59,29 @@ export function Card({
         </button>
       </div>
 
+      {/* Menu Kebab Dropdown */}
       {isMenuOpen && (
         <>
-          {/* essa div aqui é uma div invisível que cobre toda a tela, quando o usuário clicar fora do menu o menu vai fechar pq o usuário vai estar clicando nessa div */}
           <div
             className="fixed inset-0 z-10"
             onClick={() => setIsMenuOpen(false)}
           />
-
-          <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20">
+          <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20 overflow-hidden">
             <button
               onClick={() => {
-                setIsEditing(true);
                 setIsMenuOpen(false);
+                onEdit(); // Abre o modal pop-up central
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer"
             >
               ✏️ Editar
             </button>
             <button
               onClick={() => {
-                onDelete(id);
                 setIsMenuOpen(false);
+                onDelete(id);
               }}
-              className="w-full text-left px-3 py-1.5 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
+              className="w-full text-left px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer"
             >
               🗑️ Excluir
             </button>
@@ -99,86 +89,84 @@ export function Card({
         </>
       )}
 
-      {/* Se tiver no modo edição, isso aq vai mostrar os inputs para serem alterados */}
-      {isEditing ? (
-        <div className="flex flex-col gap-2">
-          <input
-            type="text"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500"
-          />
-          <textarea
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-            placeholder="Descrição"
-            className="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
-          />
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Prioridade:</span>
-            <select
-              value={editPriority}
-              onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
-              className="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded text-xs text-slate-900 dark:text-slate-100 outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-            >
-              <option value="low">Baixa</option>
-              <option value="medium">Média</option>
-              <option value="high">Alta</option>
-            </select>
-          </div>
-          <button
-            onClick={handleSave}
-            className="bg-indigo-600 hover:bg-indigo-700 rounded text-white py-1 transition cursor-pointer w-24 self-center text-xs font-medium mt-1"
+      {/* Conteúdo do Card */}
+      <div className="pr-6">
+        {/* Tag de Prioridade */}
+        {priority && (
+          <span
+            className={`inline-block px-2 py-0.5 text-[11px] font-semibold rounded-md border mb-2 ${priorityStyles[priority].classes}`}
           >
-            Salvar
-          </button>
-        </div>
-      ) : (
-        <div className="pr-6">
-          {priority && (
-            <span
-              className={`inline-block px-2 py-0.5 text-[11px] font-semibold rounded border mb-1.5 ${priorityStyles[priority].classes}`}
-            >
-              {priorityStyles[priority].label}
-            </span>
-          )}
-          <p className="text-xl font-semibold text-slate-800 dark:text-slate-100">
+            {priorityStyles[priority].label}
+          </span>
+        )}
+
+        {/* Título com botão de expandir/recolher ao lado */}
+        <div className="flex items-start gap-1.5">
+          <p
+            className={`text-base font-bold text-slate-800 dark:text-slate-100 leading-snug break-words flex-1 ${
+              isExpanded ? "" : "line-clamp-2"
+            }`}
+          >
             {title}
           </p>
-          {description && (
-            <p className="text-lg text-slate-500 dark:text-slate-400 mt-1">
-              {description}
-            </p>
+
+          {isTextLong && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded transition cursor-pointer shrink-0 mt-0.5"
+              title={isExpanded ? "Recolher texto" : "Ver texto completo"}
+            >
+              {isExpanded ? (
+                // Ícone Recolher (Chevron Up)
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              ) : (
+                // Ícone Expandir (Chevron Down)
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+            </button>
           )}
         </div>
-      )}
 
-      {/* Rodapé com os botões de mover pra outra coluna */}
-      <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100 dark:border-slate-700">
-        {/* EM PROGRESSO */}
+        {/* Descrição com limite configurado ou expandido */}
+        {description && (
+          <p
+            className={`text-sm text-slate-500 dark:text-slate-400 mt-1.5 break-words ${
+              isExpanded ? "" : "line-clamp-3"
+            }`}
+          >
+            {description}
+          </p>
+        )}
+      </div>
+
+      {/* Rodapé com botões de movimentação */}
+      <div className="flex items-center gap-2 mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800">
         {status === "in_progress" && (
           <>
             <button
               onClick={() => onMove(id, "to_do")}
-              className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
+              className="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
             >
               Voltar
             </button>
 
             <button
               onClick={() => onMove(id, "done")}
-              className="px-3 py-1 ml-auto bg-emerald-600 rounded hover:bg-emerald-700 transition text-white "
+              className="px-3 py-1 text-xs font-medium ml-auto bg-emerald-600 hover:bg-emerald-700 transition text-white rounded-lg cursor-pointer"
             >
               Concluir
             </button>
           </>
         )}
 
-        {/* A FAZER */}
         {status === "to_do" && (
           <button
             onClick={() => onMove(id, "in_progress")}
-            className="px-3 py-1 font-medium ml-auto bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
+            className="px-3 py-1 text-xs font-medium ml-auto bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
           >
             Avançar
           </button>
@@ -187,7 +175,7 @@ export function Card({
         {status === "done" && (
           <button
             onClick={() => onMove(id, "in_progress")}
-            className="px-3 py-1 font-medium bg-slate-200 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded cursor-pointer"
+            className="px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 rounded-lg cursor-pointer"
           >
             Reabrir
           </button>
