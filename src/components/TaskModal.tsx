@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Task, TaskPriority, TaskStatus, ColumnData } from "../types/task";
+import type { Task, TaskPriority, TaskStatus, ColumnData, CardColor } from "../types/task";
 
 interface TaskModalProps {
   mode: "create" | "edit";
@@ -13,6 +13,7 @@ interface TaskModalProps {
     description?: string;
     status: TaskStatus;
     priority: TaskPriority;
+    color: CardColor;
   }) => void;
 }
 
@@ -21,6 +22,16 @@ const capitalizeFirstLetter = (text: string): string => {
   if (!text) return "";
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+// Paleta de cores para os cards
+const cardColorPalette: { id: CardColor; name: string; bgClass: string }[] = [
+  { id: "default", name: "Padrão", bgClass: "bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600" },
+  { id: "blue", name: "Azul", bgClass: "bg-blue-500" },
+  { id: "purple", name: "Roxo", bgClass: "bg-purple-500" },
+  { id: "emerald", name: "Esmeralda", bgClass: "bg-emerald-500" },
+  { id: "amber", name: "Âmbar", bgClass: "bg-amber-500" },
+  { id: "rose", name: "Rosa", bgClass: "bg-rose-500" },
+];
 
 export function TaskModal({
   mode,
@@ -38,11 +49,14 @@ export function TaskModal({
     mode === "edit" && task ? task.priority || "medium" : "medium";
   const initialStatus: TaskStatus =
     mode === "edit" && task ? task.status : defaultStatus;
+  const initialColor: CardColor =
+    mode === "edit" && task?.color ? task.color : "default";
 
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
   const [priority, setPriority] = useState<TaskPriority>(initialPriority);
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
+  const [color, setColor] = useState<CardColor>(initialColor);
 
   const currentColumnTitle =
     columns?.find((c) => c.id === status)?.title ||
@@ -58,7 +72,8 @@ export function TaskModal({
       ? title !== initialTitle ||
         description !== initialDescription ||
         priority !== initialPriority ||
-        status !== initialStatus
+        status !== initialStatus ||
+        color !== initialColor
       : title.trim().length > 0 || description.trim().length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,6 +88,7 @@ export function TaskModal({
         : "",
       priority,
       status,
+      color,
     });
     onClose();
   };
@@ -131,6 +147,34 @@ export function TaskModal({
               onChange={handleDescriptionChange}
               className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none"
             />
+          </div>
+
+          {/* Seletor de Cor do Card */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+              Cor do Card
+            </label>
+            <div className="flex items-center gap-3">
+              {cardColorPalette.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setColor(item.id)}
+                  className={`w-8 h-8 rounded-xl ${item.bgClass} transition flex items-center justify-center cursor-pointer shadow-xs ${
+                    color === item.id
+                      ? "ring-3 ring-offset-2 ring-indigo-500 dark:ring-offset-slate-900 scale-105"
+                      : "opacity-80 hover:opacity-100"
+                  }`}
+                  title={item.name}
+                >
+                  {color === item.id && (
+                    <svg className="w-4 h-4 text-slate-800 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Seletores: Prioridade e Coluna (Status) */}

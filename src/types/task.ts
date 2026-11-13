@@ -3,12 +3,16 @@ export type TaskPriority = 'low' | 'medium' | 'high';
 // O status agora é flexível (string) para suportar qualquer ID de coluna dinâmica
 export type TaskStatus = string;
 
+// Cores personalizadas para os cards
+export type CardColor = 'default' | 'blue' | 'purple' | 'emerald' | 'amber' | 'rose';
+
 export interface Task {
   id: number;
   title: string; 
   description?: string;
   priority?: TaskPriority;
   status: TaskStatus;
+  color?: CardColor;
 }
 
 // Cores pré-selecionadas para as colunas
