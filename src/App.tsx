@@ -350,7 +350,7 @@ export default function App() {
           <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
             NEXO Kanban
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Gerenciamento dinâmico de tarefas com personalização e filtros
           </p>
         </div>
@@ -398,7 +398,7 @@ export default function App() {
               placeholder="Buscar tarefas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 transition leading-normal"
             />
           </div>
 
@@ -406,7 +406,7 @@ export default function App() {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value as "all" | TaskPriority)}
-            className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="all">Todas as Prioridades</option>
             <option value="high">🔴 Alta Prioridade</option>
@@ -418,7 +418,7 @@ export default function App() {
           <select
             value={colorFilter}
             onChange={(e) => setColorFilter(e.target.value as "all" | CardColor)}
-            className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="all">Todas as Cores</option>
             <option value="default">Padrão</option>
@@ -433,7 +433,7 @@ export default function App() {
           {isFilterActive && (
             <button
               onClick={clearFilters}
-              className="px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl border border-rose-200 dark:border-rose-900/50 transition cursor-pointer"
+              className="px-3.5 py-2 text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl border border-rose-200 dark:border-rose-900/50 transition cursor-pointer"
             >
               Limpar filtros
             </button>
@@ -442,7 +442,7 @@ export default function App() {
 
         {/* Seletor de Ordenação */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Ordenar:</span>
+          <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Ordenar:</span>
           <select
             value={sortBy}
             onChange={(e) =>
@@ -456,7 +456,7 @@ export default function App() {
                   | "alpha"
               )
             }
-            className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="px-3.5 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="manual">Manual (Personalizada)</option>
             <option value="priority_desc">Prioridade (Alta ➔ Baixa)</option>
@@ -481,6 +481,7 @@ export default function App() {
             const nextColumn = colIndex < columns.length - 1 ? columns[colIndex + 1] : null;
             const isNextLastColumn = colIndex + 1 === columns.length - 1;
             const isLastColumn = colIndex === columns.length - 1;
+            const lastColumn = columns[columns.length - 1];
 
             return (
               <Column
@@ -489,6 +490,32 @@ export default function App() {
                 count={columnTasks.length}
                 onAddTask={() => handleOpenCreateModal(column.id)}
                 onEditColumn={() => handleOpenEditColumnModal(column)}
+                onAddColumnLeft={() => {
+                  const newCol: ColumnData = {
+                    id: `col_${Date.now()}`,
+                    title: 'Nova coluna',
+                    color: 'slate',
+                    width: 'w-80',
+                  };
+                  setColumns(prev => {
+                    const newCols = [...prev];
+                    newCols.splice(colIndex, 0, newCol);
+                    return newCols;
+                  });
+                }}
+                onAddColumnRight={() => {
+                  const newCol: ColumnData = {
+                    id: `col_${Date.now()}`,
+                    title: 'Nova coluna',
+                    color: 'slate',
+                    width: 'w-80',
+                  };
+                  setColumns(prev => {
+                    const newCols = [...prev];
+                    newCols.splice(colIndex + 1, 0, newCol);
+                    return newCols;
+                  });
+                }}
                 onMoveLeft={colIndex > 0 ? () => handleMoveColumn(colIndex, "left") : undefined}
                 onMoveRight={
                   colIndex < columns.length - 1
@@ -519,6 +546,11 @@ export default function App() {
                     onMoveDown={
                       sortBy === "manual" && taskIdx < columnTasks.length - 1
                         ? () => handleMoveTaskOrder(task.id, "down")
+                        : undefined
+                    }
+                    onCompleteDirectly={
+                      !isLastColumn && lastColumn
+                        ? () => handleMoveTask(task.id, lastColumn.id)
                         : undefined
                     }
                     isNextLastColumn={isNextLastColumn}

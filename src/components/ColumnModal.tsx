@@ -68,23 +68,55 @@ export function ColumnModal({
     onClose();
   };
 
+  const handleCloseWithPrompt = () => {
+    if (mode === "edit" && hasChanges) {
+      const wantToSave = window.confirm(
+        "Você tem alterações não salvas. Deseja salvar as alterações antes de sair?"
+      );
+      if (wantToSave) {
+        if (!title.trim()) return;
+        onSave({
+          id: column?.id,
+          title: capitalizeFirstLetter(title.trim()),
+          color,
+          width,
+          priority: priority === "none" ? undefined : priority,
+        });
+      }
+    }
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
         {/* Cabeçalho */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
-          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-            {mode === "create" ? "Nova Coluna" : "Editar Coluna"}
-          </h3>
-          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            {width === "w-72"
-              ? "Compacta"
-              : width === "w-80"
-              ? "Padrão"
-              : width === "w-96"
-              ? "Larga"
-              : "Extra Larga"}
-          </span>
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+              {mode === "create" ? "Nova Coluna" : "Editar Coluna"}
+            </h3>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              {width === "w-72"
+                ? "Compacta"
+                : width === "w-80"
+                ? "Padrão"
+                : width === "w-96"
+                ? "Larga"
+                : "Extra Larga"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCloseWithPrompt}
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="Fechar"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         {/* Formulário */}
@@ -101,7 +133,7 @@ export function ColumnModal({
               placeholder="Ex: Em Revisão, Backlog..."
               value={title}
               onChange={(e) => setTitle(capitalizeFirstLetter(e.target.value))}
-              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-base font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition leading-normal"
             />
           </div>
 
@@ -142,7 +174,7 @@ export function ColumnModal({
               <select
                 value={width}
                 onChange={(e) => setWidth(e.target.value as ColumnWidth)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               >
                 <option value="w-72">Compacta (288px)</option>
                 <option value="w-80">Padrão (320px)</option>
@@ -158,7 +190,7 @@ export function ColumnModal({
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority | "none")}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-slate-100 outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               >
                 <option value="none">Nenhuma</option>
                 <option value="low">🟢 Baixa</option>
@@ -174,12 +206,12 @@ export function ColumnModal({
               type="button"
               onClick={onClose}
               className={`px-4 py-2 text-sm font-medium rounded-xl transition cursor-pointer ${
-                hasChanges
+                mode === "edit" && hasChanges
                   ? "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50"
                   : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               }`}
             >
-              {hasChanges ? "Descartar mudanças" : "Sair"}
+              {mode === "edit" && hasChanges ? "Descartar mudanças" : "Sair"}
             </button>
 
             <button

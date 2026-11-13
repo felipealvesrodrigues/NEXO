@@ -10,6 +10,9 @@ interface ColumnProps {
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
   onDeleteColumn: () => void;
+  // New callbacks for inserting columns
+  onAddColumnLeft?: () => void;
+  onAddColumnRight?: () => void;
 }
 
 const columnColorStyles: Record<
@@ -78,6 +81,8 @@ export function Column({
   onMoveLeft,
   onMoveRight,
   onDeleteColumn,
+  onAddColumnLeft,
+  onAddColumnRight,
 }: ColumnProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -101,16 +106,19 @@ export function Column({
 
           {/* Nome da Coluna */}
           <h2
-            className={`text-lg font-bold truncate ${colorConfig.headerText}`}
+            className={`text-xl font-bold truncate ${colorConfig.headerText}`}
             title={column.title}
           >
             {column.title}
+            {column.isCompleted && (
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 rounded">Concluído</span>
+            )}
           </h2>
 
           {/* Prioridade da Coluna (se houver) */}
           {column.priority && (
             <span
-              className={`px-1.5 py-0.5 text-[10px] font-semibold rounded border shrink-0 ${priorityBadges[column.priority].badge}`}
+              className={`px-2 py-0.5 text-xs font-semibold rounded border shrink-0 ${priorityBadges[column.priority].badge}`}
             >
               {priorityBadges[column.priority].label}
             </span>
@@ -150,52 +158,76 @@ export function Column({
                   onClick={() => setIsMenuOpen(false)}
                 />
                 <div className="absolute right-0 mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-1.5 z-30 overflow-hidden">
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      onEditColumn();
-                    }}
-                    className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
-                  >
-                    ✏️ Editar Coluna
-                  </button>
+  <button
+    onClick={() => {
+      setIsMenuOpen(false);
+      onEditColumn();
+    }}
+    className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
+  >
+    ✏️ Editar Coluna
+  </button>
 
-                  {onMoveLeft && (
-                    <button
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onMoveLeft();
-                      }}
-                      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
-                    >
-                      ⬅️ Mover para Esquerda
-                    </button>
-                  )}
+  {onAddColumnLeft && (
+    <button
+      onClick={() => {
+        setIsMenuOpen(false);
+        onAddColumnLeft();
+      }}
+      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
+    >
+      ➕ Coluna à esquerda
+    </button>
+  )}
 
-                  {onMoveRight && (
-                    <button
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        onMoveRight();
-                      }}
-                      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
-                    >
-                      ➡️ Mover para Direita
-                    </button>
-                  )}
+  {onAddColumnRight && (
+    <button
+      onClick={() => {
+        setIsMenuOpen(false);
+        onAddColumnRight();
+      }}
+      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
+    >
+      ➕ Coluna à direita
+    </button>
+  )}
 
-                  <div className="border-t border-slate-100 dark:border-slate-700/80 my-1" />
+  {onMoveLeft && (
+    <button
+      onClick={() => {
+        setIsMenuOpen(false);
+        onMoveLeft();
+      }}
+      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
+    >
+      ⬅️ Mover para Esquerda
+    </button>
+  )}
 
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      onDeleteColumn();
-                    }}
-                    className="w-full text-left px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-2"
-                  >
-                    🗑️ Excluir Coluna
-                  </button>
-                </div>
+  {onMoveRight && (
+    <button
+      onClick={() => {
+        setIsMenuOpen(false);
+        onMoveRight();
+      }}
+      className="w-full text-left px-3.5 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer flex items-center gap-2"
+    >
+      ➡️ Mover para Direita
+    </button>
+  )}
+
+  <div className="border-t border-slate-100 dark:border-slate-700/80 my-1" />
+
+  <button
+    onClick={() => {
+      setIsMenuOpen(false);
+      onDeleteColumn();
+    }}
+    className="w-full text-left px-3.5 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer flex items-center gap-2"
+  >
+    🗑️ Excluir Coluna
+  </button>
+</div>
               </>
             )}
           </div>

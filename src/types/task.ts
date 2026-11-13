@@ -27,4 +27,5 @@ export interface ColumnData {
   color?: ColumnColor;
   width?: ColumnWidth;
   priority?: TaskPriority;
+  isCompleted?: boolean; // Define se esta coluna é a coluna designada de concluídos
 }
